@@ -11,19 +11,22 @@ function decodeBase64(base64, enableUnicode) {
 }
 
 function createURL(base64, sourcemapArg, enableUnicodeArg) {
-    var sourcemap = sourcemapArg === undefined ? null : sourcemapArg;
-    var enableUnicode = enableUnicodeArg === undefined ? false : enableUnicodeArg;
-    var source = decodeBase64(base64, enableUnicode);
-    var start = source.indexOf('\n', 10) + 1;
-    var body = source.substring(start) + (sourcemap ? '\/\/# sourceMappingURL=' + sourcemap : '');
-    var blob = new Blob([body], { type: 'application/javascript' });
-    return URL.createObjectURL(blob);
+    // var sourcemap = sourcemapArg === undefined ? null : sourcemapArg;
+    // var enableUnicode = enableUnicodeArg === undefined ? false : enableUnicodeArg;
+    // var source = decodeBase64(base64, enableUnicode);
+    // var start = source.indexOf('\n', 10) + 1;
+    // var body = source.substring(start) + (sourcemap ? '\/\/# sourceMappingURL=' + sourcemap : '');
+    // var blob = new Blob([body], { type: 'application/javascript' });
+    // return URL.createObjectURL(blob);
+
+    // FIXME Need sourcemap support?
+    return `data:text/javascript;base64,${base64}`
 }
 
 export function createBase64WorkerFactory(base64, sourcemapArg, enableUnicodeArg) {
     var url;
     return function WorkerFactory(options) {
         url = url || createURL(base64, sourcemapArg, enableUnicodeArg);
-        return new Worker(url, options);
+        return new SharedWorker(url, options);
     };
 }
